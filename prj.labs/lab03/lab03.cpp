@@ -18,6 +18,7 @@ cv::Mat func_graph(const cv::Mat& look_up_table) {
 	cv::Mat graph(cv::Mat::ones(size, CV_8UC1) * 255);
 	double kw(size.width / 256.0);
 	int maxVal = 1;
+
 	for (int i = 0; i < look_up_table.rows; i++) {
 		uchar val(look_up_table.at<uchar>(i));
 		if (val > maxVal) {
@@ -27,6 +28,29 @@ cv::Mat func_graph(const cv::Mat& look_up_table) {
 	for (int i = 0; i < 256; i++) {
 		circle(graph, cv::Point{ static_cast<int>(i * kw), static_cast<int>(size.height * (1.0 - look_up_table.at<uchar>(i) * 1.0 / maxVal)) }, 1, cv::Scalar(0), cv::FILLED);
 	}
+	cv::Mat h_line(10, 512, CV_8UC1);
+	for (int i = 0; i < 512; i++) {
+		for (int j = 0; j < 10; j++) {
+			int color = 0;
+			if (i % 10 == 0 && i > 9) {
+				color = 255;
+			}
+			h_line.at<uchar>(j, i) = color;
+		}
+	}
+	graph.push_back(h_line);
+	std::cout << "\n" << graph.size() << "\n";
+	cv::Mat v_line(522, 10, CV_8UC1);
+	for (int i = 0; i < 10; i++) {
+		for (int j = 0; j < 522; j++) {
+			int color = 0;
+			if (j % 10 == 0 && j < 501) {
+				color = 255;
+			}
+			v_line.at<uchar>(j, i) = color;
+		}
+	}
+	cv::hconcat(v_line, graph, graph);
 	return graph;
 }
 
